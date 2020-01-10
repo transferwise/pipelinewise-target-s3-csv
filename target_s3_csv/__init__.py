@@ -119,9 +119,9 @@ def persist_messages(messages, config):
 
     # CSV files created uploading to S3
     for filename in filenames:
-        s3.upload_file(filename, config.get('s3_bucket'), config.get('s3_key_prefix'),
+        s3.upload_file(filename, config.get('s3_bucket'), config.get('s3_key_prefix', ''),
                        encryption_type=config.get('encryption_type'),
-                       encryption_type=config.get('encryption_key'))
+                       encryption_key=config.get('encryption_key'))
 
         # Remove the uploaded file
         os.remove(filename)

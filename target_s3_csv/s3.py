@@ -3,6 +3,7 @@
 import os
 import backoff
 import boto3
+from botocore.client import Config
 import singer
 
 from botocore.credentials import (
@@ -44,15 +45,18 @@ def upload_file(filename, bucket, key_prefix,
     s3_client = boto3.client('s3', config=Config(signature_version='s3v4'))
     s3_key = "{}{}".format(key_prefix, os.path.basename(filename))
 
-    if encryption_type and encryption_type.lower() != "none":
+    if encryption_type is None or encryption_type.lower() == "none":
         # No encryption:
-        encryption_desc = ""
+        encryption_desc = " with no encryption"
         encryption_args = None
     else:
         if encryption_type.lower() == "kms":
-            encryption_args = {"ServerSideEncryption": "aws:kms"})
+            encryption_args = {"ServerSideEncryption": "aws:kms"}
             if encryption_key:
-                encryption_desc = " using '{}' KMS encryption"
+                encryption_desc = (
+                    " using KMS encryption key ID '{}'"
+                    .format(encryption_key)
+                )
                 encryption_args["SSEKMSKeyId"] = encryption_key
             else:
                 encryption_desc = " using default KMS encryption"
