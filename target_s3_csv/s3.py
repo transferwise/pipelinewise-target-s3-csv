@@ -39,10 +39,33 @@ def setup_aws_client(config):
                                 aws_secret_access_key=aws_secret_access_key)
 
 @retry_pattern()
-def upload_file(filename, bucket, key_prefix):
-    s3_client = boto3.client('s3')
+def upload_file(filename, bucket, key_prefix,
+                encryption_type=None, encryption_key=None):
+    s3_client = boto3.client('s3', config=Config(signature_version='s3v4'))
     s3_key = "{}{}".format(key_prefix, os.path.basename(filename))
 
-    LOGGER.info("Uploading {} to bucket {} at {}".format(filename, bucket, s3_key))
-    s3_client.upload_file(filename, bucket, s3_key)
+    encryption_args = None
+    if encryption_type:
+        if encryption_type.lower() == "none":
+            encryption_desc = ""
+        elif encryption_type.lower() == "kms":
+            encryption_args={"ServerSideEncryption": "aws:kms"})
+            if encryption_key:
+                encryption_args["SSEKMSKeyId"] = encryption_key
+                encryption_desc = " using '{}' KMS encryption"
+            else:
+                encryption_desc = " using default KMS encryption"
+        else:
+            raise NotImplementedError(
+                "Encryption type '{}' is not supported. "
+                "Expected: 'none' or 'KMS'"
+                .format(encryption_type)
+            )
+    LOGGER.info(
+        "Uploading {} to bucket {} at {}{}"
+        .format(filename, bucket, s3_key, encryption_desc)
+    )
+    s3_client.upload_file(filename, bucket, s3_key, ExtraArgs=encryption_args)
+
+
 
