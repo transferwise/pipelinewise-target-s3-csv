@@ -46,8 +46,8 @@ def upload_file(filename, bucket, key_prefix,
     s3_key = "{}{}".format(key_prefix, os.path.basename(filename))
 
     if encryption_type is None or encryption_type.lower() == "none":
-        # No encryption:
-        encryption_desc = " with no encryption"
+        # No encryption config (defaults to settings on the bucket):
+        encryption_desc = ""
         encryption_args = None
     else:
         if encryption_type.lower() == "kms":
