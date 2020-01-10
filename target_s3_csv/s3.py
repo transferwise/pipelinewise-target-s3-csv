@@ -67,6 +67,3 @@ def upload_file(filename, bucket, key_prefix,
         .format(filename, bucket, s3_key, encryption_desc)
     )
     s3_client.upload_file(filename, bucket, s3_key, ExtraArgs=encryption_args)
-
-
-
