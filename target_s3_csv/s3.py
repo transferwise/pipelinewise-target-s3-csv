@@ -44,15 +44,16 @@ def upload_file(filename, bucket, key_prefix,
     s3_client = boto3.client('s3', config=Config(signature_version='s3v4'))
     s3_key = "{}{}".format(key_prefix, os.path.basename(filename))
 
-    encryption_args = None
-    if encryption_type:
-        if encryption_type.lower() == "none":
-            encryption_desc = ""
-        elif encryption_type.lower() == "kms":
-            encryption_args={"ServerSideEncryption": "aws:kms"})
+    if encryption_type and encryption_type.lower() != "none":
+        # No encryption:
+        encryption_desc = ""
+        encryption_args = None
+    else:
+        if encryption_type.lower() == "kms":
+            encryption_args = {"ServerSideEncryption": "aws:kms"})
             if encryption_key:
-                encryption_args["SSEKMSKeyId"] = encryption_key
                 encryption_desc = " using '{}' KMS encryption"
+                encryption_args["SSEKMSKeyId"] = encryption_key
             else:
                 encryption_desc = " using default KMS encryption"
         else:
