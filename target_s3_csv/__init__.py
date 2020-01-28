@@ -165,7 +165,7 @@ def main():
     config_errors = utils.validate_config(config)
     if len(config_errors) > 0:
         logger.error("Invalid configuration:\n   * {}".format('\n   * '.join(config_errors)))
-        exit(1)
+        sys.exit(1)
 
     s3.setup_aws_client(config)
 
