@@ -88,6 +88,7 @@ def remove_metadata_values_from_record(record_message):
     return cleaned_record
 
 
+# pylint: disable=unnecessary-comprehension
 def flatten_key(k, parent_key, sep):
     """
     """

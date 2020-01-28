@@ -19,6 +19,12 @@ setup(name="pipelinewise-target-s3-csv",
           'boto3==1.9.57',
           'backoff==1.3.2'
       ],
+      extras_require={
+          "test": [
+              "nose==1.3.7",
+              "pylint==2.4.2"
+          ]
+      },
       entry_points="""
           [console_scripts]
           target-s3-csv=target_s3_csv:main

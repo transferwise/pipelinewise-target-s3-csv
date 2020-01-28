@@ -75,18 +75,30 @@ Full list of options in `config.json`:
 
 ### To run tests:
 
-1. Install python dependencies in a virtual env and run nose unit and integration tests
+1. Define environment variables that requires running the tests
+```
+  export TARGET_S3_CSV_ACCESS_KEY_ID=<s3-access-key-id>
+  export TARGET_S3_CSV_SECRET_ACCESS_KEY=<s3-secret-access-key>
+  export TARGET_S3_CSV_BUCKET=<s3-bucket>
+  export TARGET_S3_CSV_KEY_PREFIX=<s3-key-prefix>
+```
+
+2. Install python test dependencies in a virtual env and run nose unit and integration tests
 ```
   python3 -m venv venv
   . venv/bin/activate
   pip install --upgrade pip
-  pip install .
-  pip install nose
+  pip install .[test]
 ```
 
 3. To run unit tests:
 ```
   nosetests --where=tests/unit
+```
+
+4. To run integration tests:
+```
+  nosetests --where=tests/integration
 ```
 
 ### To run pylint:
