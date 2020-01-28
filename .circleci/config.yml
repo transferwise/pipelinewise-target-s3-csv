@@ -19,7 +19,7 @@ jobs:
           command: |
             . venv/bin/activate
             pip install .[test]
-            pylint target_snowflake -d C,W,unexpected-keyword-arg,duplicate-code
+            pylint target_s3_csv -d C,W,unexpected-keyword-arg,duplicate-code
 
       - run:
           name: 'Unit Tests'
