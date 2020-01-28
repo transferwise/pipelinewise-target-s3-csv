@@ -68,16 +68,16 @@ class TestIntegration(unittest.TestCase):
         """Loading multiple tables from the same input tap with gzip compression"""
         tap_lines = test_utils.get_test_tap_lines('messages-with-three-streams.json')
 
-        # Turning off compression
+        # Turning on gzip compression
         self.config['compression'] = 'gzip'
         self.persist_messages(tap_lines)
         self.assert_three_streams_are_in_s3_bucket(compression='gzip')
 
-    def test_loading_csv_files_with_gzip_compression(self):
-        """Loading multiple tables from the same input tap with gzip compression"""
+    def test_loading_csv_files_with_invalid_compression(self):
+        """Loading multiple tables from the same input tap with invalid compression"""
         tap_lines = test_utils.get_test_tap_lines('messages-with-three-streams.json')
 
-        # Turning off compression
+        # Turning on a not supported compression method
         self.config['compression'] = 'INVALID_COMPRESSION_METHOD'
 
         # Invalid compression method should raise exception
