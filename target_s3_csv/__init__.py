@@ -119,11 +119,11 @@ def persist_messages(messages, config):
             logger.warning("Unknown message type {} in message {}"
                             .format(o['type'], o))
 
-    # CSV files created uploading to S3
+    # Upload created CSV files to S3
     for filename in filenames:
         compressed_file = None
         if config.get("compression") is None or config["compression"].lower() == "none":
-            pass # no compression
+            pass  # no compression
         else:
             if config["compression"] == "gzip":
                 compressed_file = f"{filename}.gz"
@@ -135,10 +135,12 @@ def persist_messages(messages, config):
                 raise NotImplementedError(
                     "Compression type '{}' is not supported. "
                     "Expected: 'none' or 'gzip'"
-                    .format(config['compression'])
+                    .format(config["compression"])
                 )
         s3.upload_file(compressed_file or filename,
-                       config.get('s3_bucket'), config.get('s3_key_prefix'))
+                       config.get('s3_bucket'), config.get('s3_key_prefix', ''),
+                       encryption_type=config.get('encryption_type'),
+                       encryption_key=config.get('encryption_key'))
 
         # Remove the local file(s)
         os.remove(filename)
