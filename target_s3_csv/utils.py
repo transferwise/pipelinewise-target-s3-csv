@@ -10,7 +10,7 @@ import inflection
 from decimal import Decimal
 from datetime import datetime
 
-logger = singer.get_logger()
+logger = singer.get_logger('target_s3_csv')
 
 def validate_config(config):
     """Validates config"""

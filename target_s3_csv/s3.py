@@ -1,21 +1,14 @@
 #!/usr/bin/env python3
 
 import os
+
 import backoff
 import boto3
-from botocore.client import Config
 import singer
-
-from botocore.credentials import (
-    AssumeRoleCredentialFetcher,
-    CredentialResolver,
-    DeferredRefreshableCredentials,
-    JSONFileCache
-)
+from botocore.client import Config
 from botocore.exceptions import ClientError
-from botocore.session import Session
 
-LOGGER = singer.get_logger()
+LOGGER = singer.get_logger('target_s3_csv')
 
 
 def retry_pattern():

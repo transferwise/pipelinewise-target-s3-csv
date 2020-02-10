@@ -1,25 +1,23 @@
 #!/usr/bin/env python3
 
 import argparse
-import io
-import os
-import sys
-import shutil
-import gzip
-import json
 import csv
+import gzip
+import io
+import json
+import os
+import shutil
+import sys
 import tempfile
 from datetime import datetime
-import itertools
-import pkg_resources
 
-from jsonschema import ValidationError, Draft4Validator, FormatChecker
 import singer
+from jsonschema import Draft4Validator, FormatChecker
 
 from target_s3_csv import s3
 from target_s3_csv import utils
 
-logger = singer.get_logger()
+logger = singer.get_logger('target_s3_csv')
 
 
 def emit_state(state):
