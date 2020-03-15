@@ -65,6 +65,7 @@ Full list of options in `config.json`:
 |-------------------------------------|---------|------------|---------------------------------------------------------------|
 | aws_access_key_id                   | String  | Yes        | S3 Access Key Id                                              |
 | aws_secret_access_key               | String  | Yes        | S3 Secret Access Key                                          |
+| aws_session_token                   | String  | No         | (Optional.) S3 Token for use with temporary credentials.      |
 | s3_bucket                           | String  | Yes        | S3 Bucket name                                                |
 | s3_key_prefix                       | String  |            | (Default: None) A static prefix before the generated S3 key names. Using prefixes you can 
 | delimiter                           | String  |            | (Default: ',') A one-character string used to separate fields. |

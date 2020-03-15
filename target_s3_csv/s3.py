@@ -27,10 +27,12 @@ def log_backoff_attempt(details):
 def setup_aws_client(config):
     aws_access_key_id = config['aws_access_key_id']
     aws_secret_access_key = config['aws_secret_access_key']
+    aws_session_token = config.get('aws_session_token', None)
 
     LOGGER.info("Attempting to create AWS session")
     boto3.setup_default_session(aws_access_key_id=aws_access_key_id,
-                                aws_secret_access_key=aws_secret_access_key)
+                                aws_secret_access_key=aws_secret_access_key,
+                                aws_session_token=aws_session_token)
 
 @retry_pattern()
 def upload_file(filename, bucket, key_prefix,
