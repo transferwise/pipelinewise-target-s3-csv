@@ -12,7 +12,7 @@ import tempfile
 from datetime import datetime
 
 import singer
-from jsonschema import Draft4Validator, FormatChecker
+from jsonschema import Draft7Validator, FormatChecker
 
 from target_s3_csv import s3
 from target_s3_csv import utils
@@ -109,7 +109,7 @@ def persist_messages(messages, config):
                 schemas[stream] = utils.add_metadata_columns_to_schema(o)
 
             schema = utils.float_to_decimal(o['schema'])
-            validators[stream] = Draft4Validator(schema, format_checker=FormatChecker())
+            validators[stream] = Draft7Validator(schema, format_checker=FormatChecker())
             key_properties[stream] = o['key_properties']
         elif message_type == 'ACTIVATE_VERSION':
             logger.debug('ACTIVATE_VERSION message')
