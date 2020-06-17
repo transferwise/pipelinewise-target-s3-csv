@@ -12,7 +12,7 @@
 -------------------
 
 - Add gzip file support
-- Add support fro KMS encryption
+- Add support for KMS encryption
 
 1.0.1 (2019-08-16)
 -------------------
