@@ -131,5 +131,6 @@ def get_target_key(message, prefix=None, timestamp=None, naming_convention=None)
         if k in key:
             key = key.replace(k, v)
     if prefix:
-        key = f'{prefix}{key}'
+        filename = key.split('/')[-1]
+        key = key.replace(filename, f'{prefix}{filename}')
     return key
