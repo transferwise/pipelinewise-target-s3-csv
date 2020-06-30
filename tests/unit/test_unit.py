@@ -3,7 +3,6 @@ from nose.tools import assert_raises
 
 import target_s3_csv
 
-
 class TestUnit(unittest.TestCase):
     """
     Unit Tests
@@ -31,4 +30,26 @@ class TestUnit(unittest.TestCase):
 
         # Minimal configuratino should pass - (nr_of_errors == 0)
         self.assertEqual(len(validator(minimal_config)), 0)
+
+
+    def test_naming_convention_replaces_tokens(self):
+        message = {
+            'stream': 'the_stream'
+        }
+        timestamp = 'fake_timestamp'
+        s3_key = target_s3_csv.utils.get_target_key(message, timestamp=timestamp, naming_convention='test_{stream}_{timestamp}_test.csv')
+
+        self.assertEqual('test_the_stream_fake_timestamp_test.csv', s3_key)
+
+
+    def test_naming_convention_has_reasonable_default(self):
+        message = {
+            'stream': 'the_stream'
+        }
+        s3_key = target_s3_csv.utils.get_target_key(message)
+
+        # default is "{stream}-{timestamp}.csv"
+        self.assertTrue(s3_key.startswith('the_stream'))
+        self.assertTrue(s3_key.endswith('.csv'))
+
 
