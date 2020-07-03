@@ -115,3 +115,22 @@ def flatten_record(d, parent_key=[], sep='__'):
         else:
             items.append((new_key, json.dumps(v) if type(v) is list else v))
     return dict(items)
+
+
+def get_target_key(message, prefix=None, timestamp=None, naming_convention=None):
+    """Creates and returns an S3 key for the message"""
+    if not naming_convention:
+        naming_convention = '{stream}-{timestamp}.csv' # o['stream'] + '-' + now + '.csv'
+    if not timestamp:
+        timestamp = datetime.now().strftime('%Y%m%dT%H%M%S')
+    key = naming_convention
+    for k, v in {
+        '{stream}': message['stream'],
+        '{timestamp}': timestamp,
+    }.items():
+        if k in key:
+            key = key.replace(k, v)
+    if prefix:
+        filename = key.split('/')[-1]
+        key = key.replace(filename, f'{prefix}{filename}')
+    return key

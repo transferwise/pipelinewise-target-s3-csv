@@ -70,8 +70,9 @@ def persist_messages(messages, config):
 
             filename = o['stream'] + '-' + now + '.csv'
             filename = os.path.expanduser(os.path.join(tempfile.gettempdir(), filename))
-            if not filename in filenames:
-                filenames.append(filename)
+            target_key = utils.get_target_key(o, prefix=config.get('s3_key_prefix', ''), timestamp=now, naming_convention=config.get('naming_convention'))
+            if not (filename, target_key) in filenames:
+                filenames.append((filename, target_key))
 
             file_is_empty = (not os.path.isfile(filename)) or os.stat(filename).st_size == 0
 
@@ -118,7 +119,7 @@ def persist_messages(messages, config):
                             .format(o['type'], o))
 
     # Upload created CSV files to S3
-    for filename in filenames:
+    for filename, target_key in filenames:
         compressed_file = None
         if config.get("compression") is None or config["compression"].lower() == "none":
             pass  # no compression
@@ -136,7 +137,8 @@ def persist_messages(messages, config):
                     .format(config["compression"])
                 )
         s3.upload_file(compressed_file or filename,
-                       config.get('s3_bucket'), config.get('s3_key_prefix', ''),
+                       config.get('s3_bucket'),
+                       target_key,
                        encryption_type=config.get('encryption_type'),
                        encryption_key=config.get('encryption_key'))
 

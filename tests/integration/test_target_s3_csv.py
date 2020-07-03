@@ -83,3 +83,11 @@ class TestIntegration(unittest.TestCase):
         # Invalid compression method should raise exception
         with assert_raises(NotImplementedError):
             self.persist_messages(tap_lines)
+
+    
+    def test_naming_convention(self):
+        tap_lines = test_utils.get_test_tap_lines('messages-with-three-streams.json')
+
+        self.config['naming_convention'] = "tester/{stream}/{timestamp}.csv"
+        self.persist_messages(tap_lines)
+        self.assert_three_streams_are_in_s3_bucket()
