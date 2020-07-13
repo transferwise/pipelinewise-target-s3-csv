@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from datetime import datetime
 import time
 import singer
 import json
@@ -124,12 +125,19 @@ def get_target_key(message, prefix=None, timestamp=None, naming_convention=None)
     if not timestamp:
         timestamp = datetime.now().strftime('%Y%m%dT%H%M%S')
     key = naming_convention
+    
+    # replace simple tokens
     for k, v in {
         '{stream}': message['stream'],
         '{timestamp}': timestamp,
+        '{date}': datetime.now().strftime('%Y-%m-%d')
     }.items():
         if k in key:
             key = key.replace(k, v)
+
+    # replace dynamic tokens
+    # todo: replace dynamic tokens such as {date(<format>)} with the date formatted as requested in <format>
+
     if prefix:
         filename = key.split('/')[-1]
         key = key.replace(filename, f'{prefix}{filename}')
