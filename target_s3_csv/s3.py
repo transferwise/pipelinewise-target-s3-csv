@@ -35,10 +35,10 @@ def setup_aws_client(config):
                                 aws_session_token=aws_session_token)
 
 @retry_pattern()
-def upload_file(filename, bucket, key_prefix,
+def upload_file(filename, bucket, s3_key,
                 encryption_type=None, encryption_key=None):
     s3_client = boto3.client('s3', config=Config(signature_version='s3v4'))
-    s3_key = "{}{}".format(key_prefix, os.path.basename(filename))
+    # s3_key = "{}{}".format(key_prefix, os.path.basename(filename))
 
     if encryption_type is None or encryption_type.lower() == "none":
         # No encryption config (defaults to settings on the bucket):
