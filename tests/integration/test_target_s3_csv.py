@@ -84,7 +84,7 @@ class TestIntegration(unittest.TestCase):
             s3_client_aws_env_vars = s3.create_client(config_aws_env_vars)
             self.persist_messages(tap_lines, s3_client_aws_env_vars)
             self.assert_three_streams_are_in_s3_bucket()
-        # Delete temporary env var to not confuxe other tests
+        # Delete temporary env var to not confuse other tests
         finally:
             del os.environ['AWS_ACCESS_KEY_ID']
             del os.environ['AWS_SECRET_ACCESS_KEY']
@@ -106,7 +106,7 @@ class TestIntegration(unittest.TestCase):
             config_aws_profile_env_vars = {}
             with self.assertRaises(botocore.exceptions.ProfileNotFound):
                 s3.create_client(config_aws_profile_env_vars)
-        # Delete temporary env var to not confuxe other tests
+        # Delete temporary env var to not confuse other tests
         finally:
             del os.environ['AWS_PROFILE']
 
