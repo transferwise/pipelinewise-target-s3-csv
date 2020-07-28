@@ -173,7 +173,7 @@ def main():
         logger.error("Invalid configuration:\n   * {}".format('\n   * '.join(config_errors)))
         sys.exit(1)
 
-    s3_client = s3.client_client(config)
+    s3_client = s3.create_client(config)
 
     input_messages = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
     state = persist_messages(input_messages, config, s3_client)

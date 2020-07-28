@@ -3,7 +3,6 @@ import os
 import backoff
 import boto3
 import singer
-from botocore.client import Config
 from botocore.exceptions import ClientError
 
 LOGGER = singer.get_logger('target_s3_csv')
@@ -45,6 +44,7 @@ def create_client(config):
     return aws_session.client('s3')
 
 
+# pylint: disable=too-many-arguments
 @retry_pattern()
 def upload_file(filename, s3_client, bucket, s3_key,
                 encryption_type=None, encryption_key=None):
