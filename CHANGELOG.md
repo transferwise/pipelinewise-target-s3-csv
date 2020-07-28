@@ -1,3 +1,9 @@
+1.3.0 (2020-07-28)
+-------------------
+
+- Add `aws_session_token` and `aws_profile` options for Profile based authentication
+- Add `naming_convention` option with `{date}`, `{stream}` and `{timestamp}` tokens to create dynamic file names on S3
+
 1.2.1 (2020-06-17)
 -------------------
 
