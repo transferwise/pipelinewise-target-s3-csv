@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name="pipelinewise-target-s3-csv",
-      version="1.2.1",
+      version="1.3.0",
       description="Singer.io target for writing CSV files and upload to S3 - PipelineWise compatible",
       author="TransferWise",
       url='https://github.com/transferwise/pipelinewise-target-s3-csv',
