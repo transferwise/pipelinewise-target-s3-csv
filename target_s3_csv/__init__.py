@@ -27,8 +27,9 @@ def emit_state(state):
         sys.stdout.write("{}\n".format(line))
         sys.stdout.flush()
 
+
 # pylint: disable=too-many-locals,too-many-branches,too-many-statements
-def persist_messages(messages, config):
+def persist_messages(messages, config, s3_client):
     state = None
     schemas = {}
     key_properties = {}
@@ -58,7 +59,9 @@ def persist_messages(messages, config):
                 validators[o['stream']].validate(utils.float_to_decimal(o['record']))
             except Exception as ex:
                 if type(ex).__name__ == "InvalidOperation":
-                    logger.error("Data validation failed and cannot load to destination. RECORD: {}\n'multipleOf' validations that allows long precisions are not supported (i.e. with 15 digits or more). Try removing 'multipleOf' methods from JSON schema."
+                    logger.error("Data validation failed and cannot load to destination. RECORD: {}\n"
+                                 "'multipleOf' validations that allows long precisions are not supported"
+                                 " (i.e. with 15 digits or more). Try removing 'multipleOf' methods from JSON schema."
                     .format(o['record']))
                     raise ex
 
@@ -70,7 +73,10 @@ def persist_messages(messages, config):
 
             filename = o['stream'] + '-' + now + '.csv'
             filename = os.path.expanduser(os.path.join(tempfile.gettempdir(), filename))
-            target_key = utils.get_target_key(o, prefix=config.get('s3_key_prefix', ''), timestamp=now, naming_convention=config.get('naming_convention'))
+            target_key = utils.get_target_key(o,
+                                              prefix=config.get('s3_key_prefix', ''),
+                                              timestamp=now,
+                                              naming_convention=config.get('naming_convention'))
             if not (filename, target_key) in filenames:
                 filenames.append((filename, target_key))
 
@@ -137,6 +143,7 @@ def persist_messages(messages, config):
                     .format(config["compression"])
                 )
         s3.upload_file(compressed_file or filename,
+                       s3_client,
                        config.get('s3_bucket'),
                        target_key,
                        encryption_type=config.get('encryption_type'),
@@ -161,16 +168,15 @@ def main():
     else:
         config = {}
 
-
     config_errors = utils.validate_config(config)
     if len(config_errors) > 0:
         logger.error("Invalid configuration:\n   * {}".format('\n   * '.join(config_errors)))
         sys.exit(1)
 
-    s3.setup_aws_client(config)
+    s3_client = s3.client_client(config)
 
     input_messages = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
-    state = persist_messages(input_messages, config)
+    state = persist_messages(input_messages, config, s3_client)
 
     emit_state(state)
     logger.debug("Exiting normally")

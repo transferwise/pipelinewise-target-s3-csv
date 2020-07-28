@@ -13,12 +13,11 @@ from datetime import datetime
 
 logger = singer.get_logger('target_s3_csv')
 
+
 def validate_config(config):
     """Validates config"""
     errors = []
     required_config_keys = [
-        'aws_access_key_id',
-        'aws_secret_access_key',
         's3_bucket'
     ]
 
@@ -59,6 +58,7 @@ def add_metadata_columns_to_schema(schema_message):
 
     return extended_schema_message
 
+
 def add_metadata_values_to_record(record_message, schema_message):
     """Populate metadata _sdc columns from incoming record message
     The location of the required attributes are fixed in the stream
@@ -73,6 +73,7 @@ def add_metadata_values_to_record(record_message, schema_message):
     extended_record['_sdc_table_version'] = record_message.get('version')
 
     return extended_record
+
 
 def remove_metadata_values_from_record(record_message):
     """Removes every metadata _sdc column from a given record message

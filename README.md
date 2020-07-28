@@ -53,18 +53,27 @@ Running the the target connector requires a `config.json` file. An example with 
 
    ```json
    {
-     "aws_access_key_id": "secret",
-     "aws_secret_access_key": "secret",
      "s3_bucket": "my_bucket"
    }
    ```
+
+### Profile based authentication
+
+Profile based authentication used by default using the `default` profile. To use another profile set `aws_profile` parameter in `config.json` or set the `AWS_PROFILE` environment variable.
+
+### Non-Profile based authentication
+
+For non-profile based authentication set `aws_access_key_id` , `aws_secret_access_key` and optionally the `aws_session_token` parameter in the `config.json`. Alternatively you can define them out of `config.json` by setting `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_SESSION_TOKEN` environment variables.
+
 
 Full list of options in `config.json`:
 
 | Property                            | Type    | Required?  | Description                                                   |
 |-------------------------------------|---------|------------|---------------------------------------------------------------|
-| aws_access_key_id                   | String  | Yes        | S3 Access Key Id                                              |
-| aws_secret_access_key               | String  | Yes        | S3 Secret Access Key                                          |
+| aws_access_key_id                   | String  | No         | S3 Access Key Id. If not provided, `AWS_ACCESS_KEY_ID` environment variable will be used. |
+| aws_secret_access_key               | String  | No         | S3 Secret Access Key. If not provided, `AWS_SECRET_ACCESS_KEY` environment variable will be used. |
+| aws_session_token                   | String  | No         | AWS Session token. If not provided, `AWS_SESSION_TOKEN` environment variable will be used. |
+| aws_profile                         | String  | No         | AWS profile name for profile based authentication. If not provided, `AWS_PROFILE` environment variable will be used. |
 | s3_bucket                           | String  | Yes        | S3 Bucket name                                                |
 | s3_key_prefix                       | String  |            | (Default: None) A static prefix before the generated S3 key names. Using prefixes you can 
 | delimiter                           | String  |            | (Default: ',') A one-character string used to separate fields. |
@@ -120,4 +129,3 @@ Full list of options in `config.json`:
 Apache License Version 2.0
 
 See [LICENSE](LICENSE) to see the full text.
-
