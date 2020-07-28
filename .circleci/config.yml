@@ -26,6 +26,7 @@ jobs:
           command: |
             . venv/bin/activate
             pip install .[test]
+            export LOGGING_CONF_FILE=$(pwd)/sample_logging.conf
             nosetests --where=tests/unit
 
       - run:
@@ -33,6 +34,7 @@ jobs:
           command: |
             . venv/bin/activate
             pip install .[test]
+            export LOGGING_CONF_FILE=$(pwd)/sample_logging.conf
             nosetests --where=tests/integration/
 
 workflows:

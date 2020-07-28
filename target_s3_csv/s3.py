@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
-
 import os
-
 import backoff
 import boto3
 import singer
-from botocore.client import Config
 from botocore.exceptions import ClientError
 
 LOGGER = singer.get_logger('target_s3_csv')
@@ -24,19 +21,33 @@ def log_backoff_attempt(details):
 
 
 @retry_pattern()
-def setup_aws_client(config):
-    aws_access_key_id = config['aws_access_key_id']
-    aws_secret_access_key = config['aws_secret_access_key']
-
+def create_client(config):
     LOGGER.info("Attempting to create AWS session")
-    boto3.setup_default_session(aws_access_key_id=aws_access_key_id,
-                                aws_secret_access_key=aws_secret_access_key)
 
+    # Get the required parameters from config file and/or environment variables
+    aws_access_key_id = config.get('aws_access_key_id') or os.environ.get('AWS_ACCESS_KEY_ID')
+    aws_secret_access_key = config.get('aws_secret_access_key') or os.environ.get('AWS_SECRET_ACCESS_KEY')
+    aws_session_token = config.get('aws_session_token') or os.environ.get('AWS_SESSION_TOKEN')
+    aws_profile = config.get('aws_profile') or os.environ.get('AWS_PROFILE')
+
+    # AWS credentials based authentication
+    if aws_access_key_id and aws_secret_access_key:
+        aws_session = boto3.session.Session(
+            aws_access_key_id=aws_access_key_id,
+            aws_secret_access_key=aws_secret_access_key,
+            aws_session_token=aws_session_token
+        )
+    # AWS Profile based authentication
+    else:
+        aws_session = boto3.session.Session(profile_name=aws_profile)
+
+    return aws_session.client('s3')
+
+
+# pylint: disable=too-many-arguments
 @retry_pattern()
-def upload_file(filename, bucket, s3_key,
+def upload_file(filename, s3_client, bucket, s3_key,
                 encryption_type=None, encryption_key=None):
-    s3_client = boto3.client('s3', config=Config(signature_version='s3v4'))
-    # s3_key = "{}{}".format(key_prefix, os.path.basename(filename))
 
     if encryption_type is None or encryption_type.lower() == "none":
         # No encryption config (defaults to settings on the bucket):
