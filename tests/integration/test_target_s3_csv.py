@@ -141,7 +141,7 @@ class TestIntegration(unittest.TestCase):
         """Loading multiple tables from the same input tap using custom temp directory"""
         tap_lines = test_utils.get_test_tap_lines('messages-with-three-streams.json')
 
-        # Turning on client-side encryption and load
+        # Use custom temp_dir
         self.config['temp_dir'] = ('~/.pipelinewise/tmp')
         self.persist_messages(tap_lines)
 
