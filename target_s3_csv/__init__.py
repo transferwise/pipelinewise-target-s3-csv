@@ -38,6 +38,7 @@ def persist_messages(messages, config, s3_client):
 
     delimiter = config.get('delimiter', ',')
     quotechar = config.get('quotechar', '"')
+    temp_dir = config.get('temp_dir', tempfile.gettempdir());
 
     filenames = []
     now = datetime.now().strftime('%Y%m%dT%H%M%S')
@@ -72,7 +73,7 @@ def persist_messages(messages, config, s3_client):
                 record_to_load = utils.remove_metadata_values_from_record(o)
 
             filename = o['stream'] + '-' + now + '.csv'
-            filename = os.path.expanduser(os.path.join(tempfile.gettempdir(), filename))
+            filename = os.path.expanduser(os.path.join(temp_dir, filename))
             target_key = utils.get_target_key(o,
                                               prefix=config.get('s3_key_prefix', ''),
                                               timestamp=now,
