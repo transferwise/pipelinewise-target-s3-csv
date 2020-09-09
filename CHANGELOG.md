@@ -1,7 +1,7 @@
 1.4.0 (2020-09-09)
 -------------------
 
-- Add `temp_dir` options to write temporary files to custom location
+- Add `temp_dir` option to write temporary files to custom location
 
 1.3.0 (2020-07-28)
 -------------------
