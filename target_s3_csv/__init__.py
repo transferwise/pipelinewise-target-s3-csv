@@ -38,9 +38,11 @@ def persist_messages(messages, config, s3_client):
 
     delimiter = config.get('delimiter', ',')
     quotechar = config.get('quotechar', '"')
+
+    # Use the system specific temp directory if no custom temp_dir provided
     temp_dir = os.path.expanduser(config.get('temp_dir', tempfile.gettempdir()))
 
-    # Create custom temp_dir if not exists
+    # Create temp_dir if not exists
     if temp_dir:
         os.makedirs(temp_dir, exist_ok=True)
 
