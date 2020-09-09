@@ -142,7 +142,7 @@ class TestIntegration(unittest.TestCase):
         tap_lines = test_utils.get_test_tap_lines('messages-with-three-streams.json')
 
         # Turning on client-side encryption and load
-        self.config['temp_dir'] = ('~/.pipelinewise/tmp/abc')
+        self.config['temp_dir'] = ('~/.pipelinewise/tmp')
         self.persist_messages(tap_lines)
 
         self.assert_three_streams_are_in_s3_bucket()
