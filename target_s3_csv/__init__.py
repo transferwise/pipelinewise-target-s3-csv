@@ -38,6 +38,7 @@ def persist_messages(messages, config, s3_client):
 
     delimiter = config.get('delimiter', ',')
     quotechar = config.get('quotechar', '"')
+    flatten   = config.get('flatten', True)
 
     # Use the system specific temp directory if no custom temp_dir provided
     temp_dir = os.path.expanduser(config.get('temp_dir', tempfile.gettempdir()))
@@ -89,7 +90,7 @@ def persist_messages(messages, config, s3_client):
 
             file_is_empty = (not os.path.isfile(filename)) or os.stat(filename).st_size == 0
 
-            flattened_record = utils.flatten_record(record_to_load)
+            flattened_record = utils.flatten_record(record_to_load) if flatten else record_to_load
 
             if o['stream'] not in headers and not file_is_empty:
                 with open(filename, 'r') as csvfile:
@@ -191,3 +192,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
