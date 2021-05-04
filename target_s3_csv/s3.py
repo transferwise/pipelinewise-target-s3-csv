@@ -42,7 +42,7 @@ def create_client(config):
     else:
         aws_session = boto3.session.Session(profile_name=aws_profile)
     if aws_endpoint_url:
-        s3 = aws_session.client('s3', aws_endpoint_url=aws_endpoint_url)
+        s3 = aws_session.client('s3', endpoint_url=aws_endpoint_url)
     else:
         s3 = aws_session.client('s3')
     return s3
