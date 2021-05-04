@@ -29,6 +29,7 @@ def create_client(config):
     aws_secret_access_key = config.get('aws_secret_access_key') or os.environ.get('AWS_SECRET_ACCESS_KEY')
     aws_session_token = config.get('aws_session_token') or os.environ.get('AWS_SESSION_TOKEN')
     aws_profile = config.get('aws_profile') or os.environ.get('AWS_PROFILE')
+    aws_endpoint_url = config.get('aws_endpoint_url') or os.environ.get('AWS_ENDPOINT_URL')
 
     # AWS credentials based authentication
     if aws_access_key_id and aws_secret_access_key:
@@ -40,8 +41,11 @@ def create_client(config):
     # AWS Profile based authentication
     else:
         aws_session = boto3.session.Session(profile_name=aws_profile)
-
-    return aws_session.client('s3')
+    if aws_endpoint_url:
+        s3 = aws_session.client('s3', aws_endpoint_url=aws_endpoint_url)
+    else:
+        s3 = aws_session.client('s3')
+    return s3
 
 
 # pylint: disable=too-many-arguments
