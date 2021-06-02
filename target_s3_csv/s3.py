@@ -29,7 +29,7 @@ def create_client(config):
     aws_secret_access_key = config.get('aws_secret_access_key') or os.environ.get('AWS_SECRET_ACCESS_KEY')
     aws_session_token = config.get('aws_session_token') or os.environ.get('AWS_SESSION_TOKEN')
     aws_profile = config.get('aws_profile') or os.environ.get('AWS_PROFILE')
-    aws_endpoint_url = config.get('aws_endpoint_url') or os.environ.get('AWS_ENDPOINT_URL')
+    aws_endpoint_url = config.get('aws_endpoint_url')
 
     # AWS credentials based authentication
     if aws_access_key_id and aws_secret_access_key:
