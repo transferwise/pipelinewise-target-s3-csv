@@ -67,7 +67,7 @@ class TestUnit(unittest.TestCase):
         self.assertEqual('folder1/the_prefix__test_the_stream_test.csv', s3_key)
 
 
-    @mock.patch("target_s3_csv.s3.boto3.session.Session.client")
+    @patch("target_s3_csv.s3.boto3.session.Session.client")
     def test_create_client(self, mock_client):
         """Test that if an endpoint_url is provided in the config, that it is used in client request"""
         config = {
