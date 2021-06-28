@@ -1,4 +1,6 @@
 import unittest
+from unittest.mock import patch
+
 from nose.tools import assert_raises
 
 import target_s3_csv
@@ -63,3 +65,15 @@ class TestUnit(unittest.TestCase):
         s3_key = target_s3_csv.utils.get_target_key(message, prefix='the_prefix__', naming_convention='folder1/test_{stream}_test.csv')
 
         self.assertEqual('folder1/the_prefix__test_the_stream_test.csv', s3_key)
+
+
+    @patch("target_s3_csv.s3.boto3.session.Session.client")
+    def test_create_client(self, mock_client):
+        """Test that if an endpoint_url is provided in the config, that it is used in client request"""
+        config = {
+            'aws_access_key_id': 'foo',
+            'aws_secret_access_key': 'bar',
+            'aws_endpoint_url': 'other_url'
+        }
+        target_s3_csv.s3.create_client(config)
+        mock_client.assert_called_with('s3', endpoint_url='other_url')
