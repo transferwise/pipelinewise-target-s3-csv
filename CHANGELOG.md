@@ -1,3 +1,8 @@
+1.5.0 (2021-08-13)
+-------------------
+* Add support for optional `aws_endpoint_url` to the configuration
+* Bumping dependencies
+
 1.4.0 (2020-09-09)
 -------------------
 
