@@ -36,11 +36,11 @@ or
 
 ### To run
 
-Like any other target that's following the singer specificiation:
+Like any other target that's following the singer specification:
 
 `some-singer-tap | target-s3-csv --config [config.json]`
 
-It's reading incoming messages from STDIN and using the properites in `config.json` to upload data into Postgres.
+It's reading incoming messages from STDIN and using the properties in `config.json` to upload data into Postgres.
 
 **Note**: To avoid version conflicts run `tap` and `targets` in separate virtual environments.
 
