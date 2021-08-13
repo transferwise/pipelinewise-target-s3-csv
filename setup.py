@@ -24,8 +24,9 @@ setup(name="pipelinewise-target-s3-csv",
       ],
       extras_require={
           "test": [
-              "nose==1.3.7",
-              "pylint==2.7.2"
+              'pylint==2.8.*',
+              'pytest==6.2.*',
+              'pytest-cov==2.12.*',
           ]
       },
       entry_points="""
