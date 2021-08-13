@@ -31,10 +31,7 @@ It's recommended to use a virtualenv:
 or
 
 ```bash
-  python3 -m venv venv
-  . venv/bin/activate
-  pip install --upgrade pip
-  pip install .
+  make venv
 ```
 
 ### To run
@@ -49,7 +46,7 @@ It's reading incoming messages from STDIN and using the properites in `config.js
 
 ### Configuration settings
 
-Running the the target connector requires a `config.json` file. An example with the minimal settings:
+Running the target connector requires a `config.json` file. An example with the minimal settings:
 
    ```json
    {
@@ -96,34 +93,26 @@ Full list of options in `config.json`:
   export TARGET_S3_CSV_KEY_PREFIX=<s3-key-prefix>
 ```
 
-2. Install python test dependencies in a virtual env and run nose unit and integration tests
-```
-  python3 -m venv venv
-  . venv/bin/activate
-  pip install --upgrade pip
-  pip install .[test]
+2. Install python test dependencies in a virtual env and run unit and integration tests
+```bash
+    make venv
 ```
 
 3. To run unit tests:
-```
-  nosetests --where=tests/unit
+```bash
+  make unit_test
 ```
 
 4. To run integration tests:
-```
-  nosetests --where=tests/integration
+```bash
+  make integration_test
 ```
 
 ### To run pylint:
 
 1. Install python dependencies and run python linter
-```
-  python3 -m venv venv
-  . venv/bin/activate
-  pip install --upgrade pip
-  pip install .
-  pip install pylint
-  pylint target_s3_csv -d C,W,unexpected-keyword-arg,duplicate-code
+```bash
+    make venv pylint
 ```
 
 ## License
