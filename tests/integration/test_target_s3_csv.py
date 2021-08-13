@@ -3,9 +3,8 @@ import unittest
 import simplejson
 import botocore
 
-from nose.tools import assert_raises
-
 import target_s3_csv
+
 from target_s3_csv import s3
 
 
@@ -51,13 +50,13 @@ class TestIntegration(unittest.TestCase):
     def test_invalid_json(self):
         """Receiving invalid JSONs should raise an exception"""
         tap_lines = test_utils.get_test_tap_lines('invalid-json.json')
-        with assert_raises(simplejson.scanner.JSONDecodeError):
+        with self.assertRaises(simplejson.scanner.JSONDecodeError):
             self.persist_messages(tap_lines)
 
     def test_message_order(self):
         """RECORD message without a previously received SCHEMA message should raise an exception"""
         tap_lines = test_utils.get_test_tap_lines('invalid-message-order.json')
-        with assert_raises(Exception):
+        with self.assertRaises(Exception):
             self.persist_messages(tap_lines)
 
     def test_loading_csv_files(self):
@@ -127,7 +126,7 @@ class TestIntegration(unittest.TestCase):
         self.config['compression'] = 'INVALID_COMPRESSION_METHOD'
 
         # Invalid compression method should raise exception
-        with assert_raises(NotImplementedError):
+        with self.assertRaises(NotImplementedError):
             self.persist_messages(tap_lines)
 
     def test_naming_convention(self):
