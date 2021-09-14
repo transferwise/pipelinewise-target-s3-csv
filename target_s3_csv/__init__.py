@@ -10,6 +10,7 @@ import shutil
 import sys
 import tempfile
 from datetime import datetime
+import traceback
 
 import singer
 from jsonschema import Draft7Validator, FormatChecker
@@ -66,6 +67,7 @@ def persist_messages(messages, config, s3_client):
             try:
                 validators[o['stream']].validate(utils.float_to_decimal(o['record']))
             except Exception as ex:
+                traceback.print_exc()
                 logger.error("Exception: {}".format(ex))
                 logger.error("Original record: {}".format(o['record']))
                 logger.error("Decimal record: {}".format(utils.float_to_decimal(o['record'])))
