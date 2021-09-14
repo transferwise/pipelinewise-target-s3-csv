@@ -6,7 +6,7 @@ with open('README.md') as f:
     long_description = f.read()
 
 setup(name="pipelinewise-target-s3-csv",
-      version="1.4.0",
+      version="1.5.0",
       description="Singer.io target for writing CSV files and upload to S3 - PipelineWise compatible",
       long_description=long_description,
       long_description_content_type='text/markdown',
@@ -19,13 +19,14 @@ setup(name="pipelinewise-target-s3-csv",
       py_modules=["target_s3_csv"],
       install_requires=[
           'pipelinewise-singer-python==1.*',
-          'inflection==0.3.1',
-          'boto3==1.9.57',
+          'inflection==0.5.1',
+          'boto3==1.17.39',
       ],
       extras_require={
           "test": [
-              "nose==1.3.7",
-              "pylint==2.4.2"
+              'pylint==2.8.*',
+              'pytest==6.2.*',
+              'pytest-cov==2.12.*',
           ]
       },
       entry_points="""
