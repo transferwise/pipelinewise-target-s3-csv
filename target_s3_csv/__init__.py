@@ -62,9 +62,13 @@ def persist_messages(messages, config, s3_client):
                                 "was encountered before a corresponding schema".format(o['stream']))
 
             # Validate record
+            logger.error("Stream: " + o['stream'])
             try:
                 validators[o['stream']].validate(utils.float_to_decimal(o['record']))
             except Exception as ex:
+                logger.error("Exception: " + ex)
+                logger.error("Original record: " + o['record'])
+                logger.error("Decimal record: " + utils.float_to_decimal(o['record']))
                 if type(ex).__name__ == "InvalidOperation":
                     logger.error("Data validation failed and cannot load to destination. RECORD: {}\n"
                                  "'multipleOf' validations that allows long precisions are not supported"
