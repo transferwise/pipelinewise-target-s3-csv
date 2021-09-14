@@ -62,8 +62,10 @@ def persist_messages(messages, config, s3_client):
                 raise Exception("A record for stream {}"
                                 "was encountered before a corresponding schema".format(o['stream']))
 
-            # Validate record
+            # We set the decimal precision to avoid decimal.DivisionImpossible exceptions
             decimal.getcontext().prec = 40
+
+            # Validate record
             try:
                 validators[o['stream']].validate(utils.float_to_decimal(o['record']))
             except Exception as ex:
