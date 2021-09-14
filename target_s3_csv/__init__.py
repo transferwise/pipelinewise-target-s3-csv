@@ -10,6 +10,7 @@ import shutil
 import sys
 import tempfile
 from datetime import datetime
+import decimal
 
 import singer
 from jsonschema import Draft7Validator, FormatChecker
