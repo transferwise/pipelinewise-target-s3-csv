@@ -72,7 +72,7 @@ Full list of options in `config.json`:
 | aws_session_token                   | String  | No         | AWS Session token. If not provided, `AWS_SESSION_TOKEN` environment variable will be used. |
 | aws_endpoint_url                    | String  | No         | AWS endpoint URL. |
 | aws_profile                         | String  | No         | AWS profile name for profile based authentication. If not provided, `AWS_PROFILE` environment variable will be used. |
-| s3_bucket                           | String  | Yes        | S3 Bucket name                                                |
+| s3_bucket                           | String  | Yes        | S3 Bucket name. Setting this to `localhost` will keep the files in temp_dir and not upload to S3.  |
 | s3_key_prefix                       | String  |            | (Default: None) A static prefix before the generated S3 key names. Using prefixes you can 
 | delimiter                           | String  |            | (Default: ',') A one-character string used to separate fields. |
 | quotechar                           | String  |            | (Default: '"') A one-character string used to quote fields containing special characters, such as the delimiter or quotechar, or which contain new-line characters. |

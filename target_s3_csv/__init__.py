@@ -38,6 +38,8 @@ def persist_messages(messages, config, s3_client):
 
     delimiter = config.get('delimiter', ',')
     quotechar = config.get('quotechar', '"')
+    s3_bucket = config.get('s3_bucket')
+    skip_upload = s3_bucket == 'localhost'
 
     # Use the system specific temp directory if no custom temp_dir provided
     temp_dir = os.path.expanduser(config.get('temp_dir', tempfile.gettempdir()))
@@ -133,6 +135,8 @@ def persist_messages(messages, config, s3_client):
 
     # Upload created CSV files to S3
     for filename, target_key in filenames:
+        if skip_upload:
+            break  # Skip S3 upload and keep local files
         compressed_file = None
         if config.get("compression") is None or config["compression"].lower() == "none":
             pass  # no compression
@@ -151,7 +155,7 @@ def persist_messages(messages, config, s3_client):
                 )
         s3.upload_file(compressed_file or filename,
                        s3_client,
-                       config.get('s3_bucket'),
+                       s3_bucket,
                        target_key,
                        encryption_type=config.get('encryption_type'),
                        encryption_key=config.get('encryption_key'))
@@ -180,7 +184,7 @@ def main():
         logger.error("Invalid configuration:\n   * {}".format('\n   * '.join(config_errors)))
         sys.exit(1)
 
-    s3_client = s3.create_client(config)
+    s3_client = s3.create_client(config) if config.get('s3_bucket') != 'localhost' else None
 
     input_messages = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
     state = persist_messages(input_messages, config, s3_client)
