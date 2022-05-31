@@ -103,9 +103,14 @@ def flatten_key(k, parent_key, sep):
 
     return sep.join(inflected_key)
 
-def flatten_record(d, parent_key=[], sep='__'):
+
+def flatten_record(d, parent_key=None, sep='__'):
     """
     """
+
+    if parent_key is None:
+        parent_key = []
+
     items = []
     for k in sorted(d.keys()):
         v = d[k]
