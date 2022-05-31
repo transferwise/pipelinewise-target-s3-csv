@@ -112,7 +112,6 @@ def persist_messages(messages, config, s3_client):
 
                 writer.writerow(flattened_record)
 
-            state = None
         elif message_type == 'STATE':
             logger.debug('Setting state to {}'.format(o['value']))
             state = o['value']
