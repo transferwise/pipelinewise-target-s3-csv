@@ -6,8 +6,7 @@ import backoff
 import boto3
 import singer
 
-from typing import Optional, Tuple, List
-
+from typing import Optional, Tuple, List, Dict, Iterator
 from botocore.client import BaseClient
 from botocore.exceptions import ClientError
 
@@ -87,7 +86,7 @@ def upload_file(filename, s3_client, bucket, s3_key,
     s3_client.upload_file(filename, bucket, s3_key, ExtraArgs=encryption_args)
 
 
-def upload_files(filenames: List[Tuple[str, str]],
+def upload_files(filenames: Iterator[Dict],
                  s3_client: BaseClient,
                  s3_bucket: str,
                  compression: Optional[str],
@@ -97,7 +96,8 @@ def upload_files(filenames: List[Tuple[str, str]],
     Uploads given local files to s3
     Compress if necessary
     """
-    for filename, target_key in filenames:
+    for file in filenames:
+        filename, target_key = file['filename'], file['target_key']
         compressed_file = None
 
         if compression is not None and compression.lower() != "none":
