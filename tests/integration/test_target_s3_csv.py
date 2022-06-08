@@ -2,16 +2,13 @@ import os
 import unittest
 import simplejson
 import botocore
+import botocore.exceptions
 
 import target_s3_csv
 
 from target_s3_csv import s3
 
-
-try:
-    import tests.utils as test_utils
-except ImportError:
-    import utils as test_utils
+import tests.integration.utils as test_utils
 
 
 class TestIntegration(unittest.TestCase):
@@ -141,7 +138,7 @@ class TestIntegration(unittest.TestCase):
         tap_lines = test_utils.get_test_tap_lines('messages-with-three-streams.json')
 
         # Use custom temp_dir
-        self.config['temp_dir'] = ('~/.pipelinewise/tmp')
+        self.config['temp_dir'] = '~/.pipelinewise/tmp'
         self.persist_messages(tap_lines)
 
         self.assert_three_streams_are_in_s3_bucket()
