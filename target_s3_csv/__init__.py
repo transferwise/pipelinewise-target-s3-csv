@@ -9,9 +9,9 @@ import os
 import shutil
 import sys
 import tempfile
-from datetime import datetime
-
 import singer
+
+from datetime import datetime
 from jsonschema import Draft7Validator, FormatChecker
 
 from target_s3_csv import s3
@@ -46,7 +46,9 @@ def persist_messages(messages, config, s3_client):
     if temp_dir:
         os.makedirs(temp_dir, exist_ok=True)
 
-    filenames = []
+    # dictionary to hold csv filename per stream
+    filenames = {}
+
     now = datetime.now().strftime('%Y%m%dT%H%M%S')
 
     for message in messages:
@@ -57,19 +59,20 @@ def persist_messages(messages, config, s3_client):
             raise
         message_type = o['type']
         if message_type == 'RECORD':
-            if o['stream'] not in schemas:
+            stream_name = o['stream']
+
+            if stream_name not in schemas:
                 raise Exception("A record for stream {}"
-                                "was encountered before a corresponding schema".format(o['stream']))
+                                "was encountered before a corresponding schema".format(stream_name))
 
             # Validate record
             try:
-                validators[o['stream']].validate(utils.float_to_decimal(o['record']))
+                validators[stream_name].validate(utils.float_to_decimal(o['record']))
             except Exception as ex:
                 if type(ex).__name__ == "InvalidOperation":
-                    logger.error("Data validation failed and cannot load to destination. RECORD: {}\n"
+                    logger.error("Data validation failed and cannot load to destination. \n"
                                  "'multipleOf' validations that allows long precisions are not supported"
-                                 " (i.e. with 15 digits or more). Try removing 'multipleOf' methods from JSON schema."
-                    .format(o['record']))
+                                 " (i.e. with 15 digits or more). Try removing 'multipleOf' methods from JSON schema.")
                     raise ex
 
             record_to_load = o['record']
@@ -78,32 +81,24 @@ def persist_messages(messages, config, s3_client):
             else:
                 record_to_load = utils.remove_metadata_values_from_record(o)
 
-            filename = o['stream'] + '-' + now + '.csv'
-            filename = os.path.expanduser(os.path.join(temp_dir, filename))
-            target_key = utils.get_target_key(o,
-                                              prefix=config.get('s3_key_prefix', ''),
-                                              timestamp=now,
-                                              naming_convention=config.get('naming_convention'))
-            if not (filename, target_key) in filenames:
-                filenames.append((filename, target_key))
-
+            filename = filenames[stream_name]['filename']
             file_is_empty = (not os.path.isfile(filename)) or os.stat(filename).st_size == 0
 
             flattened_record = utils.flatten_record(record_to_load)
 
-            if o['stream'] not in headers and not file_is_empty:
+            if stream_name not in headers and not file_is_empty:
                 with open(filename, 'r') as csvfile:
                     reader = csv.reader(csvfile,
                                         delimiter=delimiter,
                                         quotechar=quotechar)
                     first_line = next(reader)
-                    headers[o['stream']] = first_line if first_line else flattened_record.keys()
+                    headers[stream_name] = first_line if first_line else flattened_record.keys()
             else:
-                headers[o['stream']] = flattened_record.keys()
+                headers[stream_name] = flattened_record.keys()
 
             with open(filename, 'a') as csvfile:
                 writer = csv.DictWriter(csvfile,
-                                        headers[o['stream']],
+                                        headers[stream_name],
                                         extrasaction='ignore',
                                         delimiter=delimiter,
                                         quotechar=quotechar)
@@ -115,23 +110,35 @@ def persist_messages(messages, config, s3_client):
         elif message_type == 'STATE':
             logger.debug('Setting state to {}'.format(o['value']))
             state = o['value']
+
         elif message_type == 'SCHEMA':
-            stream = o['stream']
-            schemas[stream] = o['schema']
+            stream_name = o['stream']
+            schemas[stream_name] = o['schema']
+
             if config.get('add_metadata_columns'):
-                schemas[stream] = utils.add_metadata_columns_to_schema(o)
+                schemas[stream_name] = utils.add_metadata_columns_to_schema(o)
 
             schema = utils.float_to_decimal(o['schema'])
-            validators[stream] = Draft7Validator(schema, format_checker=FormatChecker())
-            key_properties[stream] = o['key_properties']
+            validators[stream_name] = Draft7Validator(schema, format_checker=FormatChecker())
+            key_properties[stream_name] = o['key_properties']
+
+            if stream_name not in filenames:
+                filenames[stream_name] = {
+                    'filename': os.path.expanduser(os.path.join(temp_dir, stream_name + '-' + now + '.csv')),
+                    'target_key': utils.get_target_key(message=o,
+                                                       prefix=config.get('s3_key_prefix', ''),
+                                                       timestamp=now,
+                                                       naming_convention=config.get('naming_convention'))
+
+                }
+
         elif message_type == 'ACTIVATE_VERSION':
             logger.debug('ACTIVATE_VERSION message')
         else:
-            logger.warning("Unknown message type {} in message {}"
-                            .format(o['type'], o))
+            logger.warning("Unknown message type {} in message {}".format(o['type'], o))
 
     # Upload created CSV files to S3
-    s3.upload_files(filenames, s3_client, config['s3_bucket'], config.get("compression"),
+    s3.upload_files(iter(filenames.values()), s3_client, config['s3_bucket'], config.get("compression"),
                     config.get('encryption_type'), config.get('encryption_key'))
 
     return state
