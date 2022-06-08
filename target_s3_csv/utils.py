@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
-
-from datetime import datetime
 import time
 import singer
 import json
 import re
-import collections
 import inflection
 
 from decimal import Decimal
 from datetime import datetime
+from collections.abc import MutableMapping
 
 logger = singer.get_logger('target_s3_csv')
 
@@ -105,14 +103,19 @@ def flatten_key(k, parent_key, sep):
 
     return sep.join(inflected_key)
 
-def flatten_record(d, parent_key=[], sep='__'):
+
+def flatten_record(d, parent_key=None, sep='__'):
     """
     """
+
+    if parent_key is None:
+        parent_key = []
+
     items = []
     for k in sorted(d.keys()):
         v = d[k]
         new_key = flatten_key(k, parent_key, sep)
-        if isinstance(v, collections.MutableMapping):
+        if isinstance(v, MutableMapping):
             items.extend(flatten_record(v, parent_key + [k], sep=sep).items())
         else:
             items.append((new_key, json.dumps(v) if type(v) is list else v))

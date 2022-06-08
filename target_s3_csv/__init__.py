@@ -112,7 +112,6 @@ def persist_messages(messages, config, s3_client):
 
                 writer.writerow(flattened_record)
 
-            state = None
         elif message_type == 'STATE':
             logger.debug('Setting state to {}'.format(o['value']))
             state = o['value']
@@ -132,34 +131,8 @@ def persist_messages(messages, config, s3_client):
                             .format(o['type'], o))
 
     # Upload created CSV files to S3
-    for filename, target_key in filenames:
-        compressed_file = None
-        if config.get("compression") is None or config["compression"].lower() == "none":
-            pass  # no compression
-        else:
-            if config["compression"] == "gzip":
-                compressed_file = f"{filename}.gz"
-                with open(filename, 'rb') as f_in:
-                    with gzip.open(compressed_file, 'wb') as f_out:
-                        logger.info(f"Compressing file as '{compressed_file}'")
-                        shutil.copyfileobj(f_in, f_out)
-            else:
-                raise NotImplementedError(
-                    "Compression type '{}' is not supported. "
-                    "Expected: 'none' or 'gzip'"
-                    .format(config["compression"])
-                )
-        s3.upload_file(compressed_file or filename,
-                       s3_client,
-                       config.get('s3_bucket'),
-                       target_key,
-                       encryption_type=config.get('encryption_type'),
-                       encryption_key=config.get('encryption_key'))
-
-        # Remove the local file(s)
-        os.remove(filename)
-        if compressed_file:
-            os.remove(compressed_file)
+    s3.upload_files(filenames, s3_client, config['s3_bucket'], config.get("compression"),
+                    config.get('encryption_type'), config.get('encryption_key'))
 
     return state
 

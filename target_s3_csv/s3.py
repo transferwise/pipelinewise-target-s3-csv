@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
+import gzip
 import os
+import shutil
 import backoff
 import boto3
 import singer
+
+from typing import Optional, Tuple, List
+
+from botocore.client import BaseClient
 from botocore.exceptions import ClientError
 
 LOGGER = singer.get_logger('target_s3_csv')
@@ -79,3 +85,46 @@ def upload_file(filename, s3_client, bucket, s3_key,
         .format(filename, bucket, s3_key, encryption_desc)
     )
     s3_client.upload_file(filename, bucket, s3_key, ExtraArgs=encryption_args)
+
+
+def upload_files(filenames: List[Tuple[str, str]],
+                 s3_client: BaseClient,
+                 s3_bucket: str,
+                 compression: Optional[str],
+                 encryption_type: Optional[str],
+                 encryption_key: Optional[str]):
+    """
+    Uploads given local files to s3
+    Compress if necessary
+    """
+    for filename, target_key in filenames:
+        compressed_file = None
+
+        if compression is not None and compression.lower() != "none":
+            if compression == "gzip":
+                compressed_file = f"{filename}.gz"
+                target_key = f'{target_key}.gz'
+
+                with open(filename, 'rb') as f_in:
+                    with gzip.open(compressed_file, 'wb') as f_out:
+                        LOGGER.info(f"Compressing file as '%s'", compressed_file)
+                        shutil.copyfileobj(f_in, f_out)
+
+            else:
+                raise NotImplementedError(
+                    "Compression type '{}' is not supported. Expected: 'none' or 'gzip'".format(compression)
+                )
+
+        upload_file(compressed_file or filename,
+                    s3_client,
+                    s3_bucket,
+                    target_key,
+                    encryption_type=encryption_type,
+                    encryption_key=encryption_key
+                    )
+
+        # Remove the local file(s)
+        if os.path.exists(filename):
+            os.remove(filename)
+            if compressed_file:
+                os.remove(compressed_file)
