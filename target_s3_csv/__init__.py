@@ -81,7 +81,20 @@ def persist_messages(messages, config, s3_client):
             else:
                 record_to_load = utils.remove_metadata_values_from_record(o)
 
-            filename = filenames[stream_name]['filename']
+            if stream_name not in filenames:
+                filename = os.path.expanduser(os.path.join(temp_dir, stream_name + '-' + now + '.csv'))
+
+                filenames[stream_name] = {
+                    'filename': filename,
+                    'target_key': utils.get_target_key(message=o,
+                                                       prefix=config.get('s3_key_prefix', ''),
+                                                       timestamp=now,
+                                                       naming_convention=config.get('naming_convention'))
+
+                }
+            else:
+                filename = filenames[stream_name]['filename']
+
             file_is_empty = (not os.path.isfile(filename)) or os.stat(filename).st_size == 0
 
             flattened_record = utils.flatten_record(record_to_load)
@@ -121,17 +134,6 @@ def persist_messages(messages, config, s3_client):
             schema = utils.float_to_decimal(o['schema'])
             validators[stream_name] = Draft7Validator(schema, format_checker=FormatChecker())
             key_properties[stream_name] = o['key_properties']
-
-            if stream_name not in filenames:
-                filenames[stream_name] = {
-                    'filename': os.path.expanduser(os.path.join(temp_dir, stream_name + '-' + now + '.csv')),
-                    'target_key': utils.get_target_key(message=o,
-                                                       prefix=config.get('s3_key_prefix', ''),
-                                                       timestamp=now,
-                                                       naming_convention=config.get('naming_convention'))
-
-                }
-
         elif message_type == 'ACTIVATE_VERSION':
             logger.debug('ACTIVATE_VERSION message')
         else:
