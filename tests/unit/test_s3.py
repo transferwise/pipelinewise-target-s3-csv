@@ -27,9 +27,9 @@ class TestS3(unittest.TestCase):
         file3 = tempfile.NamedTemporaryFile(suffix='.csv')
 
         filenames = [
-            (file1.name, 'folder1/file.csv'),
-            (file2.name, 'folder2/file.csv'),
-            (file3.name, 'folder3/file.csv'),
+            {'filename': file1.name, 'target_key': 'folder1/file.csv'},
+            {'filename': file2.name, 'target_key': 'folder2/file.csv'},
+            {'filename': file3.name, 'target_key': 'folder3/file.csv'},
         ]
 
         s3_client = Mock(**{
@@ -65,9 +65,9 @@ class TestS3(unittest.TestCase):
         file3 = tempfile.NamedTemporaryFile(suffix='.csv')
 
         filenames = [
-            (file1.name, 'folder1/file.csv'),
-            (file2.name, 'folder2/file.csv'),
-            (file3.name, 'folder3/file.csv'),
+            {'filename': file1.name, 'target_key': 'folder1/file.csv'},
+            {'filename': file2.name, 'target_key': 'folder2/file.csv'},
+            {'filename': file3.name, 'target_key': 'folder3/file.csv'},
         ]
 
         s3_client = Mock(**{
@@ -103,9 +103,9 @@ class TestS3(unittest.TestCase):
         file3 = tempfile.NamedTemporaryFile(suffix='.csv')
 
         filenames = [
-            (file1.name, 'folder1/file.csv'),
-            (file2.name, 'folder2/file.csv'),
-            (file3.name, 'folder3/file.csv'),
+            {'filename': file1.name, 'target_key': 'folder1/file.csv'},
+            {'filename': file2.name, 'target_key': 'folder2/file.csv'},
+            {'filename': file3.name, 'target_key': 'folder3/file.csv'},
         ]
 
         s3_client = Mock(**{
