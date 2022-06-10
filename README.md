@@ -17,7 +17,7 @@ If you want to run this [Singer Target](https://singer.io) independently please 
 
 ## Install
 
-First, make sure Python 3 is installed on your system or follow these
+First, make sure Python >=3.7 is installed on your system or follow these
 installation instructions for [Mac](http://docs.python-guide.org/en/latest/starting/install3/osx/) or
 [Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-ubuntu-16-04).
 

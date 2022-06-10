@@ -6,20 +6,24 @@ on:
     branches:
       - master
 
+concurrency:
+  group: ci-${{ github.head_ref }}
+  cancel-in-progress: true
+
 jobs:
   lint_and_test:
     name: Linting and Testing
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ 3.6, 3.7, 3.8 ]
+        python-version: [ 3.7, 3.8, 3.9, "3.10" ]
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -37,5 +41,5 @@ jobs:
             TARGET_S3_CSV_ACCESS_KEY_ID: ${{ secrets.TARGET_S3_CSV_ACCESS_KEY_ID }}
             TARGET_S3_CSV_SECRET_ACCESS_KEY: ${{ secrets.TARGET_S3_CSV_SECRET_ACCESS_KEY }}
             TARGET_S3_CSV_BUCKET: ${{ secrets.TARGET_S3_CSV_BUCKET }}
-            TARGET_S3_CSV_KEY_PREFIX: target_s3_csv/
+            TARGET_S3_CSV_KEY_PREFIX: target_s3_csv/ci_integration_py${{ matrix.python-version }}/
         run: make integration_test
