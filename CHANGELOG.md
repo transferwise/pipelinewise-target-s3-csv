@@ -1,7 +1,18 @@
+2.0.0 (2022-06-13)
+-------------------
+*Breaking changes*
+
+- Drop support for Python 3.6
+
+*Fixes*
+
+- FileNotFoundError when sync runs for more than a day 
+- State nullified after every record 
+
 1.5.0 (2021-08-13)
 -------------------
-* Add support for optional `aws_endpoint_url` to the configuration
-* Bumping dependencies
+- Add support for optional `aws_endpoint_url` to the configuration
+- Bumping dependencies
 
 1.4.0 (2020-09-09)
 -------------------
