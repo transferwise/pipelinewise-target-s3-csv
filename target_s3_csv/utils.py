@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import time
 import singer
-import json
+import simplejson as json
 import re
 import inflection
 
