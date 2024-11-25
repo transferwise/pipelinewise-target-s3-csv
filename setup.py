@@ -25,7 +25,7 @@ setup(name="pipelinewise-target-s3-csv",
       install_requires=[
           'pipelinewise-singer-python==1.*',
           'inflection==0.5.1',
-          'boto3==1.17.39',
+          'boto3==1.28.49',
       ],
       extras_require={
           "test": [
